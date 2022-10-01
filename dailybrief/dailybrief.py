@@ -23,7 +23,7 @@ class DailyBrief:
         Returns:
             int: seed used
         """
-        seed = int(date.today().strftime("%Y%m%d"))
+        seed = int(seed_date.strftime("%Y%m%d"))
         random.seed(seed)
         return seed
 
