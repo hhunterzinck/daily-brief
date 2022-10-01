@@ -28,6 +28,13 @@ def create_cli() -> argparse.ArgumentParser:
         help="full path to json file with credentials",
     )
     parser.add_argument(
+        "-d",
+        "--file_database",
+        type=str,
+        default="log.db",
+        help="full path to SQLite database file with log information",
+    )
+    parser.add_argument(
         "-v",
         "--verbose",
         action="store_true",
