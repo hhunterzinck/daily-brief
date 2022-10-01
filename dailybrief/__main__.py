@@ -37,13 +37,19 @@ def create_cli() -> argparse.ArgumentParser:
 
     return parser
 
+
 def main() -> int:
 
     tic = time.time()
-    
+
     # message information
-    runs = ['rock creek park north', 'rock creek park south', 'washington monument', 'lincoln memorial']
-    target_date = '2023-07-15'
+    runs = [
+        "rock creek park north",
+        "rock creek park south",
+        "washington monument",
+        "lincoln memorial",
+    ]
+    target_date = "2023-07-15"
 
     parser = create_cli()
     args = parser.parse_args()
@@ -53,31 +59,33 @@ def main() -> int:
 
     # read credentials
     cred = json.load(open(args.file_credentials))
-    sender = cred.get('sender')
-    receiver = cred.get('receiver')
-    password = cred.get('password')
+    sender = cred.get("sender")
+    receiver = cred.get("receiver")
+    password = cred.get("password")
 
     # construct message
     briefer = DailyBrief()
     briefer.set_seed_by_date(seed_date=date.today())
     msg_run = briefer.get_message_run(runs=runs)
     msg_countdown = briefer.get_message_countdown(target_date=target_date)
-    body = msg_run + '\n' + msg_countdown
+    body = msg_run + "\n" + msg_countdown
 
-    logging.info(f'Sender: {sender}')
-    logging.info(f'Receiver: {receiver}')
-    logging.info(f'Message: {body}')
-    logging.info(f'Sending message...')
+    logging.info(f"Sender: {sender}")
+    logging.info(f"Receiver: {receiver}")
+    logging.info(f"Message: {body}")
+    logging.info(f"Sending message...")
 
-    status = briefer.send_email(sender=sender, 
-                                receiver=receiver, 
-                                body=body, 
-                                password=password,
-                                subject=f'Daily Briefing | {format(date.today(), "%Y-%m-%d")}')
+    status = briefer.send_email(
+        sender=sender,
+        receiver=receiver,
+        body=body,
+        password=password,
+        subject=f'Daily Briefing | {format(date.today(), "%Y-%m-%d")}',
+    )
     if status:
-        logging.info('Delivery successful!')
+        logging.info("Delivery successful!")
     else:
-        logging.info('Delivery failed.')
+        logging.info("Delivery failed.")
 
     logging.info(f"Runtime: {round(time.time() - tic)} s")
     return 0

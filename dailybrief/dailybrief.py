@@ -1,8 +1,8 @@
-'''
+"""
 Description: send a daily email.
 Author: Haley Hunter-Zinck
 Date: 2022-09-18
-'''
+"""
 
 import smtplib
 import logging
@@ -13,7 +13,6 @@ from email.message import EmailMessage
 
 
 class DailyBrief:
-
     def set_seed_by_date(self, seed_date: date) -> int:
         """Set the random seed using a provided date.
 
@@ -49,8 +48,10 @@ class DailyBrief:
         Returns:
             int: number of days between the target date and today.
         """
-        datetime_today = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
-        delta = datetime.strptime(target_date, '%Y-%m-%d') - datetime_today
+        datetime_today = datetime.today().replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        delta = datetime.strptime(target_date, "%Y-%m-%d") - datetime_today
         return delta.days
 
     def get_message_run(self, runs: list) -> str:
@@ -63,7 +64,7 @@ class DailyBrief:
         Returns:
             str: daily run message
         """
-        msg = f'Today\'s run: \'{self.get_run(runs=runs)}\''
+        msg = f"Today's run: '{self.get_run(runs=runs)}'"
         return msg
 
     def get_message_countdown(self, target_date: str) -> str:
@@ -76,20 +77,27 @@ class DailyBrief:
         Returns:
             str: countdown message
         """
-        msg = f'Days until move-out: {self.get_countdown(target_date=target_date)}'
+        msg = f"Days until move-out: {self.get_countdown(target_date=target_date)}"
         return msg
 
-    def send_email(self, sender: str, receiver: str, body: str, password: str, subject: str='Daily Briefing') -> bool:
+    def send_email(
+        self,
+        sender: str,
+        receiver: str,
+        body: str,
+        password: str,
+        subject: str = "Daily Briefing",
+    ) -> bool:
         sent = False
 
-        message = f'Subject: {subject}\n\n{body}'
+        message = f"Subject: {subject}\n\n{body}"
 
         server = smtplib.SMTP("smtp.gmail.com", 587)
         try:
-            server.starttls() 
+            server.starttls()
             server.login(sender, password)
             server.sendmail(sender, receiver, message)
-            sent=True
+            sent = True
         except Exception as e:
             logging.error(e)
         finally:
