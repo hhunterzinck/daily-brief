@@ -28,9 +28,27 @@ class DailyBrief:
         return seed
 
     def get_run(self, runs: list) -> str:
+        """Select a run at random.
+
+        Args:
+            runs (list): list of runs from which to sample
+
+        Returns:
+            str: randomly selected run
+        """
         return random.sample(runs, k=1)[0]
 
     def get_countdown(self, target_date: str) -> int:
+        """Calculate a countdown between today's date and a target date.
+        If the target date is today's date, will return 0.
+
+        Args:
+            target_date (str): target date for which to calculate the 
+                countdown.
+
+        Returns:
+            int: number of days between the target date and today.
+        """
         datetime_today = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
         delta = datetime.strptime(target_date, '%Y-%m-%d') - datetime_today
         return delta.days
