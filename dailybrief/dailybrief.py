@@ -27,6 +27,14 @@ class DailyBrief:
         random.seed(seed)
         return seed
 
+    def get_run(self, runs: list) -> str:
+        return random.sample(runs, k=1)[0]
+
+    def get_countdown(self, target_date: str) -> int:
+        datetime_today = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
+        delta = datetime.strptime(target_date, '%Y-%m-%d') - datetime_today
+        return delta.days
+
     def get_message_run(self, runs: list) -> str:
         """Construct daily run mesage by randomly 
         sampling one run from a list.
@@ -37,7 +45,7 @@ class DailyBrief:
         Returns:
             str: daily run message
         """
-        msg = f'Today\'s run: \'{random.sample(runs, k=1)[0]}\''
+        msg = f'Today\'s run: \'{self.get_run(runs=runs)}\''
         return msg
 
     def get_message_countdown(self, target_date: str) -> str:
@@ -50,9 +58,7 @@ class DailyBrief:
         Returns:
             str: countdown message
         """
-        msg = ''
-        delta = datetime.strptime(target_date, '%Y-%m-%d') - datetime.today()
-        msg = f'Days until move-out: {delta.days}'
+        msg = f'Days until move-out: {self.get_countdown(target_date=target_date)}'
         return msg
 
     def send_email(self, sender: str, receiver: str, body: str, password: str, subject: str='Daily Briefing') -> bool:
