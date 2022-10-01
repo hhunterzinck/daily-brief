@@ -5,7 +5,7 @@ import time
 from datetime import date
 import json
 
-from dailybrief import DailyBrief
+from dailybrief.dailybrief import DailyBrief
 
 
 def create_cli() -> argparse.ArgumentParser:
