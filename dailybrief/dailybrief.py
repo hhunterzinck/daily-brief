@@ -11,6 +11,18 @@ from datetime import date, datetime
 import sqlite3
 import os.path
 
+class Email:
+    def __init__(self, send_datetime: str, sent_status: bool, sender: str, receiver: str,
+                        body: str, run: str, countdown: str, subject: str="Daily Briefing"):
+        self.send_datetime=send_datetime
+        self.sent_status=sent_status
+        self.sender=sender
+        self.receiver=receiver
+        self.subject=subject
+        self.body=body
+        self.run=run
+        self.countdown=countdown
+
 
 class DailyBrief:
 
@@ -46,6 +58,40 @@ class DailyBrief:
             cur.close()
         
         return conn
+
+    def update_database_log(self, email: Email) -> bool:
+        status = False
+
+        query = f"""INSERT INTO log 
+                    (sent_datetime, 
+                        sent_status, 
+                        sender, 
+                        receiver, 
+                        subject, 
+                        body, 
+                        run, 
+                        countdown)
+                    VALUES
+                    ({email.sent_datetime}, 
+                        {email.sent_status}, 
+                        {email.sender}, 
+                        {email.receiver}, 
+                        {email.subject}, 
+                        {email.body}, 
+                        {email.run}, 
+                        {email.countdown})
+                )"""
+
+        cur = self.conn.cursor()
+        try:
+            cur.execute(query)
+            self.conn.commit()
+            status = True
+        except Exception as e:
+            logging.error(e)
+        finally:
+            cur.close()
+        return status
 
     def clean_up(self) -> bool:
         """Close the database connection.
@@ -130,23 +176,16 @@ class DailyBrief:
         msg = f"Days until move-out: {self.get_countdown(target_date=target_date)}"
         return msg
 
-    def send_email(
-        self,
-        sender: str,
-        receiver: str,
-        body: str,
-        password: str,
-        subject: str = "Daily Briefing",
-    ) -> bool:
+    def send_email(self, email: Email, password: str) -> bool:
         sent = False
 
-        message = f"Subject: {subject}\n\n{body}"
+        message = f"Subject: {email.subject}\n\n{email.body}"
 
         server = smtplib.SMTP("smtp.gmail.com", 587)
         try:
             server.starttls()
-            server.login(sender, password)
-            server.sendmail(sender, receiver, message)
+            server.login(email.sender, password)
+            server.sendmail(email.sender, email.receiver, message)
             sent = True
         except Exception as e:
             logging.error(e)
