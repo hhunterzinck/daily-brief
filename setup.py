@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 HERE = pathlib.Path(__file__).parent
 
 VERSION = '0.1.0'
-PACKAGE_NAME = 'greeter'
+PACKAGE_NAME = 'dailybrief'
 AUTHOR = 'Haley Hunter-Zinck'
 URL = 'https://github.com/hhunterzinck/daily-brief'
 
