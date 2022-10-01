@@ -14,7 +14,7 @@ pip install .
 
 To see usage, run
 
-```
+```shell
 dailybrief -h
 ```
 
@@ -41,15 +41,15 @@ dailybrief -c /path/to/my/credentials.json -v
 
 ## Automation
 
-Automate with a daily cron job.  In the console type:
+Automate with a daily cron job.  In the console type
 
 ```
-% crontab -e
+crontab -e
 ```
 
-and paste the following command to send the email every day at 6am local time:
+and paste the following command to send the email every day at 6am local time
 ```
-0 6 * * * /path/to/python dailybrief -c /path/to/credentials.json
+0 6 * * * /path/to/python /path/to/dailybrief -c /path/to/credentials.json
 ```
 
 substituting the paths for your files.  
