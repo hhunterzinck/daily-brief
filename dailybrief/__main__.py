@@ -60,7 +60,6 @@ def main() -> int:
 
     parser = create_cli()
     args = parser.parse_args()
-
     if args.verbose:
         logging.getLogger().setLevel(logging.INFO)
 
@@ -71,7 +70,7 @@ def main() -> int:
     password = cred.get("password")
 
     # construct message
-    briefer = DailyBrief()
+    briefer = DailyBrief(args.file_database)
     briefer.set_seed_by_date(seed_date=date.today())
     msg_run = briefer.get_message_run(runs=runs)
     msg_countdown = briefer.get_message_countdown(target_date=target_date)
@@ -95,6 +94,8 @@ def main() -> int:
         logging.info("Delivery failed.")
 
     logging.info(f"Runtime: {round(time.time() - tic)} s")
+
+    briefer.clean_up()
     return 0
 
 

@@ -8,11 +8,61 @@ import smtplib
 import logging
 import random
 from datetime import date, datetime
-
-from email.message import EmailMessage
+import sqlite3
+import os.path
 
 
 class DailyBrief:
+
+    def __init__(self, file: str):
+        self.conn = self.initialize_database(file=file)
+
+    def initialize_database(self, file: str) -> sqlite3.Connection:
+        """Initialize the database, if it doesn't already exist.
+
+        Args:
+            file (str): full path to sqlite database file
+
+        Returns:
+            sqlite3.Connection: database connection object
+        """
+        db_exists = os.path.exists(file)
+        conn = sqlite3.connect(file)
+
+        if not db_exists:
+            cur = conn.cursor()
+            query = """CREATE TABLE log (
+                        log_id INTEGER PRIMARY KEY ASC,
+                        sent_datetime TEXT,
+                        sent_status INTEGER,
+                        sender TEXT,
+                        receiver TEXT,
+                        subject TEXT,
+                        body TEXT,
+                        run TEXT,
+                        countdown INTEGER
+                    )"""
+            cur.execute(query)
+            cur.close()
+        
+        return conn
+
+    def clean_up(self) -> bool:
+        """Close the database connection.
+
+        Returns:
+            bool: True if database connection successfully closed.
+        """
+        status = False
+        try:
+            self.conn.close()
+            status = True
+        except Exception as e:
+            logging.error(e)
+
+        return status
+    
+
     def set_seed_by_date(self, seed_date: date) -> int:
         """Set the random seed using a provided date.
 
