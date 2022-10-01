@@ -1,11 +1,12 @@
-# python-package-template
-The repository can be used as a template for Python packages.
+# Daily Brief
+This tool sends a daily breifing email.  The email can be automated through a cron job.  
 
 ## Installation
 
 After cloning the repository to your machine, navigate to the directory and run
 
 ```
+pip install -r requirements.txt
 pip install .
 ```
 
@@ -14,30 +15,41 @@ pip install .
 To see usage, run
 
 ```
-greeter -h
+dailybrief -h
 ```
 
 which outputs
 
 ```
-Greet yourself and someone else.
+usage: dailybrief [-h] [-c FILE_CREDENTIALS] [-v]
 
-positional arguments:
-  {hello,bye}    Choose task
-    hello        Say hello
-    bye          Say bye
-  name           your name
+Send a daily briefing email.
 
 optional arguments:
-  -h, --help     show this help message and exit
-  --verbose, -v  activate verbose logging output (default: False)
+  -h, --help            show this help message and exit
+  -c FILE_CREDENTIALS, --file_credentials FILE_CREDENTIALS
+                        full path to json file with credentials (default:
+                        credentials.json)
+  -v, --verbose         activate verbose logging output (default: False)
 ```
 
-Some example commands:
+An example command:
 
 ```
-greeter hello hhunterzinck
-greeter bye hhunterzinck
-greeter hello -t afternoon hhunterzinck
-greeter bye -f kcnizretnuhh hhunterzinck
+dailybrief -c /path/to/my/credentials.json -v
 ```
+
+## Automation
+
+Automate with a daily cron job.  In the console type:
+
+```
+% crontab -e
+```
+
+and paste the following command to send the email every day at 6am local time:
+```
+0 6 * * * /path/to/python dailybrief -c /path/to/credentials.json
+```
+
+substituting the paths for your files.  
