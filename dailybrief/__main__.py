@@ -3,6 +3,7 @@ import logging
 import argparse
 import time
 from datetime import date
+from datetime import datetime
 import json
 
 from dailybrief.dailybrief import DailyBrief
@@ -72,23 +73,24 @@ def main() -> int:
     # construct message
     briefer = DailyBrief(args.file_database)
     briefer.set_seed_by_date(seed_date=date.today())
-    msg_run = briefer.get_message_run(runs=runs)
-    msg_countdown = briefer.get_message_countdown(target_date=target_date)
-    body = msg_run + "\n" + msg_countdown
+    run = briefer.get_run(runs=runs)
+    countdown = briefer.get_countdown(target_date=target_date)
+    body = briefer.get_message(run=run, countdown=countdown)
 
-    logging.info(f"Sender: {sender}")
-    logging.info(f"Receiver: {receiver}")
-    logging.info(f"Message: {body}")
     logging.info(f"Sending message...")
 
     email = Email(sender=sender,
         receiver=receiver,
+        subject=f'Daily Briefing | {format(date.today(), "%Y-%m-%d")}',
         body=body,
-        password=password,
-        subject=f'Daily Briefing | {format(date.today(), "%Y-%m-%d")}')
+        run=run,
+        countdown=countdown
+        )
 
-    status = briefer.send_email(email, password=password)
-    if status:
+    email.sent_status = briefer.send_email(email, password=password)
+    email.sent_datetime = format(datetime.now(), "%Y-%m-%d %H:%M:%S")
+
+    if email.sent_status:
         logging.info("Delivery successful!")
     else:
         logging.info("Delivery failed.")

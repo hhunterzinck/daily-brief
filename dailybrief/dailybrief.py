@@ -12,9 +12,10 @@ import sqlite3
 import os.path
 
 class Email:
-    def __init__(self, send_datetime: str, sent_status: bool, sender: str, receiver: str,
-                        body: str, run: str, countdown: str, subject: str="Daily Briefing"):
-        self.send_datetime=send_datetime
+    def __init__(self, sender: str, receiver: str, body: str, subject: str="Daily Briefing",
+                            sent_datetime: str=None, sent_status: bool=None, run: str=None, 
+                            countdown: int=None):
+        self.sent_datetime=sent_datetime
         self.sent_status=sent_status
         self.sender=sender
         self.receiver=receiver
@@ -28,6 +29,19 @@ class DailyBrief:
 
     def __init__(self, file: str):
         self.conn = self.initialize_database(file=file)
+
+    def format_text(self, text: str) -> str:
+        """Format text for insertion into the sqlite database
+
+        Args:
+            text (str): text to insert
+
+        Returns:
+            str: formatted text
+        """
+        if text is None:
+            return ""
+        return text.replace("'", "''")
 
     def initialize_database(self, file: str) -> sqlite3.Connection:
         """Initialize the database, if it doesn't already exist.
@@ -44,7 +58,6 @@ class DailyBrief:
         if not db_exists:
             cur = conn.cursor()
             query = """CREATE TABLE log (
-                        log_id INTEGER PRIMARY KEY ASC,
                         sent_datetime TEXT,
                         sent_status INTEGER,
                         sender TEXT,
@@ -62,25 +75,16 @@ class DailyBrief:
     def update_database_log(self, email: Email) -> bool:
         status = False
 
-        query = f"""INSERT INTO log 
-                    (sent_datetime, 
-                        sent_status, 
-                        sender, 
-                        receiver, 
-                        subject, 
-                        body, 
-                        run, 
-                        countdown)
-                    VALUES
-                    ({email.sent_datetime}, 
-                        {email.sent_status}, 
-                        {email.sender}, 
-                        {email.receiver}, 
-                        {email.subject}, 
-                        {email.body}, 
-                        {email.run}, 
-                        {email.countdown})
-                )"""
+        query = f"""INSERT INTO log (sent_datetime, sent_status, sender, receiver, subject, body, run, countdown)
+                    VALUES('{self.format_text(email.sent_datetime)}', 
+                            '{self.format_text(email.sent_status)}', 
+                            '{self.format_text(email.sender)}', 
+                            '{self.format_text(email.receiver)}', 
+                            '{self.format_text(email.subject)}', 
+                            '{self.format_text(email.body)}', 
+                            '{self.format_text(email.run)}', 
+                            {email.countdown});"""
+        logging.info(f"executing query: {query}")
 
         cur = self.conn.cursor()
         try:
@@ -88,7 +92,7 @@ class DailyBrief:
             self.conn.commit()
             status = True
         except Exception as e:
-            logging.error(e)
+            logging.error(f"Error in insertion into log {e}")
         finally:
             cur.close()
         return status
@@ -150,31 +154,10 @@ class DailyBrief:
         delta = datetime.strptime(target_date, "%Y-%m-%d") - datetime_today
         return delta.days
 
-    def get_message_run(self, runs: list) -> str:
-        """Construct daily run mesage by randomly 
-        sampling one run from a list.
-
-        Args:
-            runs (list): labels for potential running routes
-
-        Returns:
-            str: daily run message
-        """
-        msg = f"Today's run: '{self.get_run(runs=runs)}'"
-        return msg
-
-    def get_message_countdown(self, target_date: str) -> str:
-        """Construct a message that displays calculating
-        number of ideas from today to a target date
-
-        Args:
-            target_date (str): target date for which to calculate countdown
-
-        Returns:
-            str: countdown message
-        """
-        msg = f"Days until move-out: {self.get_countdown(target_date=target_date)}"
-        return msg
+    def get_message(self, run: str, countdown: int) -> str:
+        msg_run = f"Today's run: '{run}'"
+        msg_countdown = f"Days until move-out: {countdown}"
+        return f"{msg_run}\n{msg_countdown}"
 
     def send_email(self, email: Email, password: str) -> bool:
         sent = False
@@ -187,6 +170,8 @@ class DailyBrief:
             server.login(email.sender, password)
             server.sendmail(email.sender, email.receiver, message)
             sent = True
+
+            self.update_database_log(email=email)
         except Exception as e:
             logging.error(e)
         finally:
