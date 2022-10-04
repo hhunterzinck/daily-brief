@@ -9,6 +9,7 @@ import json
 from dailybrief.dailybrief import DailyBrief
 from dailybrief.dailybrief import Email
 
+
 def create_cli() -> argparse.ArgumentParser:
     """Construct the command line interface parser 
     for the script.
@@ -79,13 +80,14 @@ def main() -> int:
 
     logging.info(f"Sending message...")
 
-    email = Email(sender=sender,
+    email = Email(
+        sender=sender,
         receiver=receiver,
         subject=f'Daily Briefing | {format(date.today(), "%Y-%m-%d")}',
         body=body,
         run=run,
-        countdown=countdown
-        )
+        countdown=countdown,
+    )
 
     email.sent_status = briefer.send_email(email, password=password)
     email.sent_datetime = format(datetime.now(), "%Y-%m-%d %H:%M:%S")

@@ -11,23 +11,31 @@ from datetime import date, datetime
 import sqlite3
 import os.path
 
+
 class Email:
-    def __init__(self, sender: str, receiver: str, body: str, subject: str="Daily Briefing",
-                            sent_datetime: str=None, sent_status: bool=None, run: str=None, 
-                            countdown: int=None):
-        self.sent_datetime=sent_datetime
-        self.sent_status=sent_status
-        self.sender=sender
-        self.receiver=receiver
-        self.subject=subject
-        self.body=body
-        self.run=run
-        self.countdown=countdown
+    def __init__(
+        self,
+        sender: str,
+        receiver: str,
+        body: str,
+        subject: str = "Daily Briefing",
+        sent_datetime: str = None,
+        sent_status: bool = None,
+        run: str = None,
+        countdown: int = None,
+    ):
+        self.sent_datetime = sent_datetime
+        self.sent_status = sent_status
+        self.sender = sender
+        self.receiver = receiver
+        self.subject = subject
+        self.body = body
+        self.run = run
+        self.countdown = countdown
 
 
 class DailyBrief:
-
-    def __init__(self, file: str=None):
+    def __init__(self, file: str = None):
         if file is not None:
             self.conn = self.initialize_database(file=file)
         else:
@@ -72,7 +80,7 @@ class DailyBrief:
                     )"""
             cur.execute(query)
             cur.close()
-        
+
         return conn
 
     def update_database_log(self, email: Email) -> bool:
@@ -114,7 +122,6 @@ class DailyBrief:
             logging.error(e)
 
         return status
-    
 
     def set_seed_by_date(self, seed_date: date) -> int:
         """Set the random seed using a provided date.

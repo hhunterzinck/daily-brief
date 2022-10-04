@@ -1,8 +1,8 @@
-'''
+"""
 Description: Get summary stats on daily brief database log.
 Author: Haley Hunter-Zinck
 Date: 2022-10-04
-'''
+"""
 
 import sys
 import logging
@@ -17,7 +17,9 @@ def create_cli() -> argparse.ArgumentParser:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
-    parser.add_argument("file_db", type=str, help="path to file containing sqlite database")
+    parser.add_argument(
+        "file_db", type=str, help="path to file containing sqlite database"
+    )
     parser.add_argument(
         "--verbose",
         "-v",
