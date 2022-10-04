@@ -3,9 +3,11 @@ import logging
 import argparse
 import time
 from datetime import date
+from datetime import datetime
 import json
 
 from dailybrief.dailybrief import DailyBrief
+from dailybrief.dailybrief import Email
 
 
 def create_cli() -> argparse.ArgumentParser:
@@ -26,6 +28,13 @@ def create_cli() -> argparse.ArgumentParser:
         type=str,
         default="credentials.json",
         help="full path to json file with credentials",
+    )
+    parser.add_argument(
+        "-d",
+        "--file_database",
+        type=str,
+        default="log.db",
+        help="full path to SQLite database file with log information",
     )
     parser.add_argument(
         "-v",
@@ -53,7 +62,6 @@ def main() -> int:
 
     parser = create_cli()
     args = parser.parse_args()
-
     if args.verbose:
         logging.getLogger().setLevel(logging.INFO)
 
@@ -64,30 +72,34 @@ def main() -> int:
     password = cred.get("password")
 
     # construct message
-    briefer = DailyBrief()
+    briefer = DailyBrief(args.file_database)
     briefer.set_seed_by_date(seed_date=date.today())
-    msg_run = briefer.get_message_run(runs=runs)
-    msg_countdown = briefer.get_message_countdown(target_date=target_date)
-    body = msg_run + "\n" + msg_countdown
+    run = briefer.get_run(runs=runs)
+    countdown = briefer.get_countdown(target_date=target_date)
+    body = briefer.get_message(run=run, countdown=countdown)
 
-    logging.info(f"Sender: {sender}")
-    logging.info(f"Receiver: {receiver}")
-    logging.info(f"Message: {body}")
     logging.info(f"Sending message...")
 
-    status = briefer.send_email(
+    email = Email(
         sender=sender,
         receiver=receiver,
-        body=body,
-        password=password,
         subject=f'Daily Briefing | {format(date.today(), "%Y-%m-%d")}',
+        body=body,
+        run=run,
+        countdown=countdown,
     )
-    if status:
+
+    email.sent_status = briefer.send_email(email, password=password)
+    email.sent_datetime = format(datetime.now(), "%Y-%m-%d %H:%M:%S")
+
+    if email.sent_status:
         logging.info("Delivery successful!")
     else:
         logging.info("Delivery failed.")
 
     logging.info(f"Runtime: {round(time.time() - tic)} s")
+
+    briefer.clean_up()
     return 0
 
 
