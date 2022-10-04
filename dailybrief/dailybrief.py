@@ -27,8 +27,11 @@ class Email:
 
 class DailyBrief:
 
-    def __init__(self, file: str):
-        self.conn = self.initialize_database(file=file)
+    def __init__(self, file: str=None):
+        if file is not None:
+            self.conn = self.initialize_database(file=file)
+        else:
+            self.conn = None
 
     def format_text(self, text: str) -> str:
         """Format text for insertion into the sqlite database
