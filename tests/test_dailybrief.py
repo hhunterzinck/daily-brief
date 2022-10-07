@@ -19,11 +19,11 @@ def test_set_seed_by_date():
     assert seed_yesterday != seed_today
 
 def test_get_run_one():
-    run = briefer.get_run(runs=runs)
+    run = briefer.get_run(runs=runs, exclude_last_run=False)
     assert len(run) == 1
 
 def test_get_run_sample():
-    run = briefer.get_run(runs=runs)
+    run = briefer.get_run(runs=runs, exclude_last_run=False)
     assert run in runs
     
 def test_get_countdown_zero():
