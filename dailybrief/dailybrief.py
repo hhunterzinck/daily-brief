@@ -155,8 +155,24 @@ class DailyBrief:
         random.seed(seed)
         return seed
 
-    def get_run(self, runs: list) -> str:
-        """Select a run at random.
+    def get_last_run(self) -> str:
+        """Get the last recorded run in the log.
+
+        Returns:
+            str: last run or None if nothing in the log
+        """
+        statement = f"SELECT run FROM log ORDER BY rowid DESC LIMIT 1"
+        cur = self.conn.cursor()
+        cur.execute(statement)
+        result = cur.fetchall()
+        cur.close()
+        if len(result):
+            return result[0][0]
+        return None
+
+    def get_run(self, runs: list, exclude_last_run: bool=True) -> str:
+        """Select a run at random, removing the last recorded run
+        if requested.
 
         Args:
             runs (list): list of runs from which to sample
@@ -164,6 +180,10 @@ class DailyBrief:
         Returns:
             str: randomly selected run
         """
+        if exclude_last_run:
+            last_run = self.get_last_run()
+            if last_run is not None:
+                runs.remove(last_run)
         return random.sample(runs, k=1)[0]
 
     def get_countdown(self, target_date: str) -> int:
