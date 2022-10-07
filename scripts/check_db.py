@@ -49,7 +49,7 @@ def main() -> int:
 
     n_run = 10
     statement = f"SELECT sent_datetime, run FROM log ORDER BY rowid DESC LIMIT {n_run}"
-    #statement = f"SELECT * FROM log ORDER BY rowid DESC LIMIT {n_run}"
+    # statement = f"SELECT * FROM log ORDER BY rowid DESC LIMIT {n_run}"
     cur.execute(statement)
     runs = cur.fetchall()
     print(f"Last {n_run} runs: {runs}")

@@ -90,7 +90,7 @@ def main() -> int:
     )
 
     sent_status = briefer.send_email(email, password=password)
-    
+
     if sent_status:
         logging.info("Delivery successful!")
     else:

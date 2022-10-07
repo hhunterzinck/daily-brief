@@ -40,7 +40,7 @@ class Email:
             sent (bool): True if sent and False otherwise
         """
         self.sent_status = sent_status
-    
+
     def set_sent_datetime(self, sent_datetime: str):
         """Set the sent timestamp.
 
