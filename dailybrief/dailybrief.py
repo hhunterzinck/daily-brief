@@ -33,6 +33,22 @@ class Email:
         self.run = run
         self.countdown = countdown
 
+    def set_sent_status(self, sent_status: bool):
+        """Set the sent instance variable
+
+        Args:
+            sent (bool): True if sent and False otherwise
+        """
+        self.sent_status = sent_status
+    
+    def set_sent_datetime(self, sent_datetime: str):
+        """Set the sent timestamp.
+
+        Args:
+            sent_datetime (str): _description_
+        """
+        self.sent_datetime = sent_datetime
+
 
 class DailyBrief:
     def __init__(self, file: str = None):
@@ -52,6 +68,9 @@ class DailyBrief:
         """
         if text is None:
             return ""
+
+        if not isinstance(text, str):
+            text = str(text)
         return text.replace("'", "''")
 
     def initialize_database(self, file: str) -> sqlite3.Connection:
@@ -170,7 +189,7 @@ class DailyBrief:
         return f"{msg_run}\n{msg_countdown}"
 
     def send_email(self, email: Email, password: str) -> bool:
-        sent = False
+        sent_status = False
 
         message = f"Subject: {email.subject}\n\n{email.body}"
 
@@ -179,12 +198,14 @@ class DailyBrief:
             server.starttls()
             server.login(email.sender, password)
             server.sendmail(email.sender, email.receiver, message)
-            sent = True
+            sent_status = True
 
+            email.set_sent_status(sent_status)
+            email.set_sent_datetime(format(datetime.now(), "%Y-%m-%d %H:%M:%S"))
             self.update_database_log(email=email)
         except Exception as e:
             logging.error(e)
         finally:
             server.quit()
 
-        return sent
+        return sent_status

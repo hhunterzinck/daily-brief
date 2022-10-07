@@ -89,10 +89,9 @@ def main() -> int:
         countdown=countdown,
     )
 
-    email.sent_status = briefer.send_email(email, password=password)
-    email.sent_datetime = format(datetime.now(), "%Y-%m-%d %H:%M:%S")
-
-    if email.sent_status:
+    sent_status = briefer.send_email(email, password=password)
+    
+    if sent_status:
         logging.info("Delivery successful!")
     else:
         logging.info("Delivery failed.")
