@@ -170,7 +170,7 @@ class DailyBrief:
             return result[0][0]
         return None
 
-    def get_run(self, runs: list, exclude_last_run: bool=True) -> str:
+    def get_run(self, runs: list, exclude_last_run: bool = True) -> str:
         """Select a run at random, removing the last recorded run
         if requested.
 
