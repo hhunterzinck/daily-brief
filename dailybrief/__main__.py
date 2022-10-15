@@ -37,6 +37,13 @@ def create_cli() -> argparse.ArgumentParser:
         help="full path to SQLite database file with log information",
     )
     parser.add_argument(
+        "-p",
+        "--file_parameters",
+        type=str,
+        default="parameters.json",
+        help="full path JSON file with user defined parameters",
+    )
+    parser.add_argument(
         "-v",
         "--verbose",
         action="store_true",
@@ -51,15 +58,6 @@ def main() -> int:
 
     tic = time.time()
 
-    # message information
-    runs = [
-        "rock creek park north",
-        "rock creek park south",
-        "washington monument",
-        "lincoln memorial",
-    ]
-    target_date = "2023-07-15"
-
     parser = create_cli()
     args = parser.parse_args()
     if args.verbose:
@@ -70,6 +68,11 @@ def main() -> int:
     sender = cred.get("sender")
     receiver = cred.get("receiver")
     password = cred.get("password")
+
+    # read parameters
+    params = json.load(open(args.file_parameters))
+    runs = params.get("runs")
+    target_date = params.get("target_date")
 
     # construct message
     briefer = DailyBrief(args.file_database)
