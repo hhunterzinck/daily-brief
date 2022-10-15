@@ -130,5 +130,6 @@ dmypy.json
 
 # custom
 credentials.json
+parameters.json
 todo.md
 *.db
