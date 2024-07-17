@@ -1,5 +1,5 @@
 # Daily Brief
-This tool sends a daily breifing email.  The email can be automated through a cron job.  
+This tool sends a daily briefing email.  The email can be automated through a cron job.  
 
 ## Installation
 
