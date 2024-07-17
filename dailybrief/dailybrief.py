@@ -202,11 +202,29 @@ class DailyBrief:
         )
         delta = datetime.strptime(target_date, "%Y-%m-%d") - datetime_today
         return delta.days
+    
+    def get_tally(self, event_date: str) -> int:
+        """Calculate a countdown between today's date and a target date.
+        If the target date is today's date, will return 0.
 
-    def get_message(self, run: str, countdown: int) -> str:
+        Args:
+            event_date (str): target date for which to calculate the 
+                tally.
+
+        Returns:
+            int: number of days between the target date and today.
+        """
+        datetime_today = datetime.today().replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        delta = datetime_today - datetime.strptime(event_date, "%Y-%m-%d")
+        return delta.days
+
+    def get_message(self, run: str, countdown: int, tally: int) -> str:
         msg_run = f"Today's run: '{run}'"
         msg_countdown = f"Days until move-out: {countdown}"
-        return f"{msg_run}\n{msg_countdown}"
+        msg_tally = f"Days since event: {tally}"
+        return f"{msg_run}\n{msg_countdown}\n{msg_tally}"
 
     def send_email(self, email: Email, password: str) -> bool:
         sent_status = False

@@ -73,15 +73,18 @@ def main() -> int:
     params = json.load(open(args.file_parameters))
     runs = params.get("runs")
     target_date = params.get("target_date")
+    event_date = params.get("event_date")
 
     # construct message
     briefer = DailyBrief(args.file_database)
     briefer.set_seed_by_date(seed_date=date.today())
     run = briefer.get_run(runs=runs)
     countdown = briefer.get_countdown(target_date=target_date)
-    body = briefer.get_message(run=run, countdown=countdown)
+    tally = briefer.get_tally(event_date=event_date)
+    body = briefer.get_message(run=run, countdown=countdown, tally=tally)
 
     logging.info(f"Sending message...")
+    logging.info(f"body: {body}")
 
     email = Email(
         sender=sender,
