@@ -182,7 +182,7 @@ class DailyBrief:
         """
         if exclude_last_run:
             last_run = self.get_last_run()
-            if last_run is not None:
+            if last_run is not None and last_run in runs:
                 runs.remove(last_run)
         return random.sample(runs, k=1)[0]
 
