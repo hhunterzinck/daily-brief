@@ -4,5 +4,6 @@
         "run 2",
         "run 3"
     ],
-    "target_date":"3001-01-01"
+    "target_date":"3001-01-01",
+    "event_date":"3001-01-01"
 }
